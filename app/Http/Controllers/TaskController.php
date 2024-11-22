@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest;
 
 class TaskController extends Controller
 {
@@ -25,15 +26,9 @@ class TaskController extends Controller
         return view('tasks.create', compact('categories', 'tags'));
     }
 
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'tags' => 'array',
-            'tags.*' => 'exists:tags,id'
-        ]);
+        $validatedData = $request->validated();
 
 
         $task = Task::create($validatedData);
@@ -61,15 +56,9 @@ class TaskController extends Controller
         return view('tasks.edit', compact('categories', 'tags', 'task'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(TaskRequest $request, string $id)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'tags' => 'array',
-            'tags.*' => 'exists:tags,id'
-        ]);
+        $validatedData = $request->validated();
     
         $task = Task::findOrFail($id);
         $task->update($validatedData);
